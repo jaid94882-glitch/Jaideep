@@ -4,14 +4,14 @@ import { useState } from "react";
 import UploadSlot from "./UploadSlot";
 
 const LOAN_TYPES = [
-  { value: "", label: "Select loan type · लोन प्रकार चुनें" },
+  { value: "", label: "Select loan type" },
   { value: "personal", label: "Doctor Personal Loan" },
   { value: "clinic", label: "Clinic Expansion Loan" },
   { value: "equipment", label: "Medical Equipment / Machinery Loan" },
 ];
 
 const LOAN_PURPOSES = [
-  { value: "", label: "Select purpose · उद्देश्य चुनें" },
+  { value: "", label: "Select purpose" },
   { value: "clinic-expansion", label: "Clinic / Hospital Expansion" },
   { value: "new-equipment", label: "New Medical Equipment" },
   { value: "working-capital", label: "Working Capital" },
@@ -20,6 +20,8 @@ const LOAN_PURPOSES = [
   { value: "other", label: "Other" },
 ];
 
+const DEGREES = ["", "MBBS", "MD", "MS", "DM", "MCh", "DNB", "BDS", "MDS"];
+
 const SPECIALITIES = [
   "", "General Physician", "Dentist", "Gynaecologist", "Paediatrician",
   "Orthopaedic", "Cardiologist", "Dermatologist", "ENT", "Ophthalmologist",
@@ -27,9 +29,9 @@ const SPECIALITIES = [
 ];
 
 const STEPS = [
-  { id: 1, label: "Doctor Info", labelHi: "डॉक्टर जानकारी", icon: "🩺" },
-  { id: 2, label: "Loan Requirement", labelHi: "लोन आवश्यकता", icon: "💰" },
-  { id: 3, label: "Documents", labelHi: "दस्तावेज़", icon: "📄" },
+  { id: 1, label: "Doctor Info", icon: "🩺" },
+  { id: 2, label: "Loan Requirement", icon: "💰" },
+  { id: 3, label: "Documents", icon: "📄" },
 ];
 
 const initialForm = {
@@ -70,7 +72,7 @@ export default function LeadForm() {
       if (!form.regDate) err.regDate = "Select the registration date.";
       else if (new Date(form.regDate) > new Date()) err.regDate = "Date cannot be in the future.";
       if (!form.hospital.trim()) err.hospital = "Enter hospital / clinic name.";
-      if (!form.degree.trim()) err.degree = "Enter degree (e.g. MBBS, MD).";
+      if (!form.degree) err.degree = "Select a degree.";
       if (!form.speciality) err.speciality = "Select a speciality.";
     }
     if (s === 2) {
@@ -122,7 +124,7 @@ export default function LeadForm() {
         <div className="mx-auto max-w-xl rounded-2xl bg-success-light border border-success/30 p-8 text-center shadow-card">
           <div className="text-5xl">🎉</div>
           <h3 className="mt-4 text-2xl font-bold text-success-dark">
-            Lead Submitted! · लीड सबमिट हो गई!
+            Lead Submitted!
           </h3>
           <p className="mt-2 text-slate-600 text-sm">
             Dr. {form.doctorName}&apos;s lead is with the aggregator for validation.
@@ -150,7 +152,7 @@ export default function LeadForm() {
         <div className="text-center md:text-left">
           <h2 className="text-2xl md:text-3xl font-bold text-brand">Submit a Doctor Lead</h2>
           <p className="mt-1 text-sm text-slate-500">
-            3 quick steps · 3 आसान स्टेप — डॉक्टर जानकारी, लोन आवश्यकता, दस्तावेज़
+            3 quick steps — doctor info, loan requirement, documents
           </p>
         </div>
 
@@ -171,7 +173,6 @@ export default function LeadForm() {
             >
               <span className="block text-base">{s.id < step ? "✓" : s.icon}</span>
               <span className="block text-[11px] font-bold leading-tight mt-0.5">{s.label}</span>
-              <span className="block text-[9px] opacity-80">{s.labelHi}</span>
             </button>
           ))}
         </div>
@@ -182,7 +183,7 @@ export default function LeadForm() {
             <div className="space-y-4">
               <div>
                 <label htmlFor="doctorName" className="block text-sm font-semibold text-slate-700">
-                  Doctor&apos;s Name · डॉक्टर का नाम
+                  Doctor&apos;s Name
                 </label>
                 <input id="doctorName" type="text" placeholder="Dr. Anil Sharma" value={form.doctorName}
                   onChange={set("doctorName")} className={`mt-1.5 ${inputCls(errors.doctorName)}`} />
@@ -192,7 +193,7 @@ export default function LeadForm() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="phone" className="block text-sm font-semibold text-slate-700">
-                    Mobile Number · मोबाइल
+                    Mobile Number
                   </label>
                   <div className="mt-1.5 flex">
                     <span className="inline-flex items-center rounded-l-xl border border-r-0 border-slate-300 bg-slate-50 px-3 text-sm text-slate-500">+91</span>
@@ -209,7 +210,7 @@ export default function LeadForm() {
                 </div>
                 <div>
                   <label htmlFor="location" className="block text-sm font-semibold text-slate-700">
-                    Location · स्थान
+                    Location
                   </label>
                   <input id="location" type="text" placeholder="Lucknow, UP" value={form.location}
                     onChange={set("location")} className={`mt-1.5 ${inputCls(errors.location)}`} />
@@ -220,7 +221,7 @@ export default function LeadForm() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="experience" className="block text-sm font-semibold text-slate-700">
-                    Experience (years) · अनुभव
+                    Experience — Medical Practice (years)
                   </label>
                   <input id="experience" type="number" inputMode="numeric" min={0} max={60} placeholder="12"
                     value={form.experience} onChange={set("experience")}
@@ -229,7 +230,7 @@ export default function LeadForm() {
                 </div>
                 <div>
                   <label htmlFor="email" className="block text-sm font-semibold text-slate-700">
-                    Email · ईमेल
+                    Email
                   </label>
                   <input id="email" type="email" placeholder="dr.anil@example.com" value={form.email}
                     onChange={set("email")} className={`mt-1.5 ${inputCls(errors.email)}`} />
@@ -239,7 +240,7 @@ export default function LeadForm() {
 
               <div>
                 <label htmlFor="regDate" className="block text-sm font-semibold text-slate-700">
-                  Medical Registration Date · पंजीकरण तिथि
+                  Medical Registration Date
                 </label>
                 <input id="regDate" type="date" value={form.regDate} onChange={set("regDate")}
                   className={`mt-1.5 ${inputCls(errors.regDate)}`} />
@@ -248,14 +249,14 @@ export default function LeadForm() {
 
               <UploadSlot
                 label="Registration Certificate"
-                labelHi="पंजीकरण प्रमाणपत्र (MCI/SMC)"
+                labelHi="MCI / State Medical Council"
                 file={docs.regCert}
                 onChange={setDoc("regCert")}
               />
 
               <div>
                 <label htmlFor="hospital" className="block text-sm font-semibold text-slate-700">
-                  Hospital / Clinic Name · अस्पताल / क्लिनिक
+                  Hospital / Clinic Name
                 </label>
                 <input id="hospital" type="text" placeholder="Sharma Multispeciality Clinic" value={form.hospital}
                   onChange={set("hospital")} className={`mt-1.5 ${inputCls(errors.hospital)}`} />
@@ -265,21 +266,27 @@ export default function LeadForm() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="degree" className="block text-sm font-semibold text-slate-700">
-                    Degree · डिग्री
+                    Degree
                   </label>
-                  <input id="degree" type="text" placeholder="MBBS, MD" value={form.degree}
-                    onChange={set("degree")} className={`mt-1.5 ${inputCls(errors.degree)}`} />
+                  <select id="degree" value={form.degree} onChange={set("degree")}
+                    className={`mt-1.5 ${inputCls(errors.degree)} ${form.degree ? "text-slate-800" : "text-slate-400"}`}>
+                    {DEGREES.map((d) => (
+                      <option key={d} value={d} disabled={d === ""}>
+                        {d === "" ? "Select degree" : d}
+                      </option>
+                    ))}
+                  </select>
                   <Err k="degree" />
                 </div>
                 <div>
                   <label htmlFor="speciality" className="block text-sm font-semibold text-slate-700">
-                    Speciality · विशेषज्ञता
+                    Speciality
                   </label>
                   <select id="speciality" value={form.speciality} onChange={set("speciality")}
                     className={`mt-1.5 ${inputCls(errors.speciality)} ${form.speciality ? "text-slate-800" : "text-slate-400"}`}>
                     {SPECIALITIES.map((sp) => (
                       <option key={sp} value={sp} disabled={sp === ""}>
-                        {sp === "" ? "Select · चुनें" : sp}
+                        {sp === "" ? "Select speciality" : sp}
                       </option>
                     ))}
                   </select>
@@ -294,7 +301,7 @@ export default function LeadForm() {
             <div className="space-y-4">
               <div>
                 <label htmlFor="loanPurpose" className="block text-sm font-semibold text-slate-700">
-                  Loan Purpose · लोन का उद्देश्य
+                  Loan Purpose
                 </label>
                 <select id="loanPurpose" value={form.loanPurpose} onChange={set("loanPurpose")}
                   className={`mt-1.5 ${inputCls(errors.loanPurpose)} ${form.loanPurpose ? "text-slate-800" : "text-slate-400"}`}>
@@ -307,7 +314,7 @@ export default function LeadForm() {
 
               <div>
                 <label htmlFor="amount" className="block text-sm font-semibold text-slate-700">
-                  Loan Amount · लोन राशि
+                  Loan Amount
                 </label>
                 <div className="mt-1.5 flex">
                   <span className="inline-flex items-center rounded-l-xl border border-r-0 border-slate-300 bg-slate-50 px-3 text-sm text-slate-500">₹</span>
@@ -325,7 +332,7 @@ export default function LeadForm() {
 
               <div>
                 <label htmlFor="loanType" className="block text-sm font-semibold text-slate-700">
-                  Loan Type · लोन का प्रकार
+                  Loan Type
                 </label>
                 <select id="loanType" value={form.loanType} onChange={set("loanType")}
                   className={`mt-1.5 ${inputCls(errors.loanType)} ${form.loanType ? "text-slate-800" : "text-slate-400"}`}>
@@ -344,13 +351,13 @@ export default function LeadForm() {
               <p className="text-xs text-slate-500">
                 Attach what you have now — the rest can be collected later. 🔒 Encrypted in transit.
               </p>
-              <UploadSlot label="ID Proof (Aadhaar / PAN / Passport)" labelHi="पहचान प्रमाण"
+              <UploadSlot label="ID Proof (Aadhaar / PAN / Passport)"
                 file={docs.idProof} onChange={setDoc("idProof")} />
-              <UploadSlot label="Bank Statement (Last 6 months)" labelHi="बैंक स्टेटमेंट"
+              <UploadSlot label="Bank Statement (Last 6 months)"
                 file={docs.bankStatement} onChange={setDoc("bankStatement")} />
-              <UploadSlot label="Medical Degree Certificate" labelHi="मेडिकल डिग्री प्रमाणपत्र"
+              <UploadSlot label="Medical Degree Certificate"
                 file={docs.degreeCert} onChange={setDoc("degreeCert")} />
-              <UploadSlot label="Clinic / Hospital Proof" labelHi="क्लिनिक / अस्पताल प्रमाण"
+              <UploadSlot label="Clinic / Hospital Proof"
                 file={docs.clinicProof} onChange={setDoc("clinicProof")} />
               {errors.docs && <p className="text-xs text-red-500">{errors.docs}</p>}
             </div>
@@ -367,7 +374,7 @@ export default function LeadForm() {
             {step < 3 ? (
               <button type="button" onClick={next}
                 className="tap-target flex-1 rounded-xl bg-brand text-white py-3.5 text-base font-bold hover:bg-brand-dark active:scale-[0.99] transition">
-                Next · आगे →
+                Next →
               </button>
             ) : (
               <button type="submit" disabled={submitting}
@@ -378,7 +385,7 @@ export default function LeadForm() {
                     Submitting…
                   </>
                 ) : (
-                  <>Submit Lead &amp; Earn · सबमिट करें →</>
+                  <>Submit Lead &amp; Earn →</>
                 )}
               </button>
             )}

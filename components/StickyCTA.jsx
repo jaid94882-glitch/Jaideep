@@ -7,7 +7,7 @@ export default function StickyCTA({ onClick }) {
         onClick={onClick}
         className="tap-target w-full rounded-xl bg-success text-white py-4 text-base font-bold shadow-lg active:scale-[0.99] transition"
       >
-        ⚡ Quick Submit a Lead · लीड भेजें
+        ⚡ Quick Submit a Lead
       </button>
     </div>
   );

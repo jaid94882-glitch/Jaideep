@@ -2,31 +2,26 @@ const STEPS = [
   {
     icon: "📱",
     title: "You Submit Lead",
-    titleHi: "आप लीड भेजते हैं",
     desc: "Doctor's name, phone, loan type & documents — 60 seconds from your phone.",
   },
   {
     icon: "🔍",
     title: "Aggregator Validates",
-    titleHi: "एग्रीगेटर जांच करता है",
     desc: "Lead is qualified and matched with the right RBI-registered lending partner.",
   },
   {
     icon: "🏦",
     title: "Lender Assessment",
-    titleHi: "लेंडर मूल्यांकन",
     desc: "Lending company runs credit analysis and approves the loan.",
   },
   {
     icon: "🏥",
     title: "Doctor Funded",
-    titleHi: "डॉक्टर को फंड मिलता है",
     desc: "Approved amount is disbursed directly to the doctor's account.",
   },
   {
     icon: "💰",
     title: "You Get Paid Instantly",
-    titleHi: "आपको तुरंत कमीशन",
     desc: "Commission credited to your account the moment the loan is disbursed.",
   },
 ];
@@ -40,7 +35,7 @@ export default function JourneyMap() {
             From Lead to Payout in 5 Steps
           </h2>
           <p className="mt-2 text-sm text-slate-500">
-            लीड से कमीशन तक — पूरी प्रक्रिया पारदर्शी
+            From lead to commission — a fully transparent process
           </p>
         </div>
 
@@ -78,7 +73,6 @@ export default function JourneyMap() {
                   >
                     {step.title}
                   </h3>
-                  <p className="text-xs text-slate-500 font-medium">{step.titleHi}</p>
                   <p className="mt-1 text-sm text-slate-500 max-w-xs">{step.desc}</p>
                 </div>
               </div>

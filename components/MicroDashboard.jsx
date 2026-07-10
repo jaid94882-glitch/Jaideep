@@ -1,7 +1,7 @@
 const PIPELINE = [
-  { label: "Submitted", labelHi: "सबमिट", count: 8, color: "bg-blue-400" },
-  { label: "Validating", labelHi: "जांच में", count: 5, color: "bg-amber-400" },
-  { label: "Funded", labelHi: "फंडेड", count: 3, color: "bg-success" },
+  { label: "Submitted", count: 8, color: "bg-blue-400" },
+  { label: "Validating", count: 5, color: "bg-amber-400" },
+  { label: "Funded", count: 3, color: "bg-success" },
 ];
 
 export default function MicroDashboard() {
@@ -14,7 +14,7 @@ export default function MicroDashboard() {
           {/* Total commission */}
           <div className="rounded-2xl bg-white shadow-card p-4 md:p-6 border-t-4 border-success">
             <p className="text-xs text-slate-500 font-medium">
-              Total Earned · कुल कमीशन
+              Total Earned Commission
             </p>
             <p className="mt-1 text-2xl md:text-3xl font-bold text-success">
               ₹1,24,500
@@ -25,7 +25,7 @@ export default function MicroDashboard() {
           {/* Pending approvals */}
           <div className="rounded-2xl bg-white shadow-card p-4 md:p-6 border-t-4 border-amber-400">
             <p className="text-xs text-slate-500 font-medium">
-              Pending Approvals · लंबित
+              Pending Lead Approvals
             </p>
             <p className="mt-1 text-2xl md:text-3xl font-bold text-slate-800">
               5
@@ -38,7 +38,7 @@ export default function MicroDashboard() {
           {/* Pipeline */}
           <div className="rounded-2xl bg-white shadow-card p-4 md:p-6 border-t-4 border-brand col-span-2 md:col-span-1">
             <p className="text-xs text-slate-500 font-medium">
-              Active Pipeline · पाइपलाइन ({total} leads)
+              Active Pipeline ({total} leads)
             </p>
             <div className="mt-3 flex h-3 w-full overflow-hidden rounded-full bg-slate-100">
               {PIPELINE.map((p) => (

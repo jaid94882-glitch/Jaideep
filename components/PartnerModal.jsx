@@ -67,7 +67,7 @@ export default function PartnerModal({ open, onClose }) {
           <div className="p-8 text-center">
             <div className="text-5xl">🤝</div>
             <h3 className="mt-4 text-2xl font-bold text-success-dark">
-              Welcome aboard! · स्वागत है!
+              Welcome aboard!
             </h3>
             <p className="mt-2 text-sm text-slate-600">
               Thanks {form.name.split(" ")[0]}! Our team will call you on +91{" "}
@@ -88,7 +88,7 @@ export default function PartnerModal({ open, onClose }) {
                   Become a Business Partner
                 </h3>
                 <p className="mt-1 text-xs text-slate-500">
-                  बिज़नेस पार्टनर बनें — कमीशन कमाना शुरू करें
+                  Register as an MR partner and start earning commissions
                 </p>
               </div>
               <button
@@ -104,7 +104,7 @@ export default function PartnerModal({ open, onClose }) {
             <div className="mt-5 space-y-4">
               <div>
                 <label htmlFor="p-name" className="block text-sm font-semibold text-slate-700">
-                  Your Name · आपका नाम
+                  Your Name
                 </label>
                 <input id="p-name" type="text" placeholder="Rahul Verma" value={form.name}
                   onChange={set("name")} className={`mt-1.5 ${inputCls(errors.name)}`} />
@@ -113,7 +113,7 @@ export default function PartnerModal({ open, onClose }) {
 
               <div>
                 <label htmlFor="p-mobile" className="block text-sm font-semibold text-slate-700">
-                  Mobile Number · मोबाइल नंबर
+                  Mobile Number
                 </label>
                 <div className="mt-1.5 flex">
                   <span className="inline-flex items-center rounded-l-xl border border-r-0 border-slate-300 bg-slate-50 px-3 text-sm text-slate-500">+91</span>
@@ -131,7 +131,7 @@ export default function PartnerModal({ open, onClose }) {
 
               <div>
                 <label htmlFor="p-pharma" className="block text-sm font-semibold text-slate-700">
-                  Pharma Company · फार्मा कंपनी
+                  Pharma Company
                 </label>
                 <input id="p-pharma" type="text" placeholder="Sun Pharma, Cipla…" value={form.pharma}
                   onChange={set("pharma")} className={`mt-1.5 ${inputCls(errors.pharma)}`} />
@@ -140,7 +140,7 @@ export default function PartnerModal({ open, onClose }) {
 
               <div>
                 <label htmlFor="p-city" className="block text-sm font-semibold text-slate-700">
-                  City · शहर
+                  City
                 </label>
                 <input id="p-city" type="text" placeholder="Lucknow" value={form.city}
                   onChange={set("city")} className={`mt-1.5 ${inputCls(errors.city)}`} />
@@ -149,7 +149,7 @@ export default function PartnerModal({ open, onClose }) {
 
               <div>
                 <label htmlFor="p-email" className="block text-sm font-semibold text-slate-700">
-                  Email · ईमेल
+                  Email
                 </label>
                 <input id="p-email" type="email" placeholder="rahul@example.com" value={form.email}
                   onChange={set("email")} className={`mt-1.5 ${inputCls(errors.email)}`} />
@@ -168,7 +168,7 @@ export default function PartnerModal({ open, onClose }) {
                   Submitting…
                 </>
               ) : (
-                "Join as Partner · पार्टनर बनें →"
+                "Join as Partner →"
               )}
             </button>
           </form>

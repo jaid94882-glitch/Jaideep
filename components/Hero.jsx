@@ -6,7 +6,7 @@ export default function Hero({ onQuickSubmit }) {
       <div className="mx-auto max-w-5xl text-center md:text-left md:flex md:items-center md:justify-between md:gap-12">
         <div className="md:max-w-2xl">
           <span className="inline-block rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-xs font-medium tracking-wide uppercase">
-            For Medical Representatives &middot; मेडिकल रिप्रेज़ेंटेटिव के लिए
+            For Medical Representatives
           </span>
           <h1 className="mt-5 text-3xl md:text-5xl font-bold leading-tight">
             Turn your doctor relationships into{" "}
@@ -16,15 +16,12 @@ export default function Hero({ onQuickSubmit }) {
             Submit a doctor loan lead in 60 seconds. We handle validation,
             credit and funding — you get paid on every disbursed loan.
           </p>
-          <p className="mt-2 text-blue-200 text-sm">
-            60 सेकंड में डॉक्टर लोन लीड सबमिट करें — हर लोन पर कमीशन पाएं।
-          </p>
           <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:justify-start justify-center">
             <button
               onClick={onQuickSubmit}
               className="tap-target rounded-xl bg-success hover:bg-success-dark active:scale-[0.98] transition px-8 py-4 text-lg font-semibold shadow-lg shadow-emerald-900/30"
             >
-              ⚡ Quick Submit a Lead &middot; लीड भेजें
+              ⚡ Quick Submit a Lead
             </button>
             <a
               href="#journey"
