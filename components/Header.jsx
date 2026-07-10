@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
-
-export default function Header({ onPartnerClick, onLeadClick }) {
+export default function Header({ onPartnerClick, onLeadClick, onLoginClick }) {
   return (
     <header className="sticky top-0 z-40 bg-brand-dark/95 backdrop-blur border-b border-white/10">
       <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between gap-2">
@@ -15,12 +13,12 @@ export default function Header({ onPartnerClick, onLeadClick }) {
           </span>
         </a>
         <div className="flex items-center gap-2">
-          <Link
-            href="/dashboard"
+          <button
+            onClick={onLoginClick}
             className="tap-target flex items-center px-2 text-blue-200 text-xs font-semibold underline underline-offset-2 hover:text-white transition"
           >
             Login
-          </Link>
+          </button>
           <button
             onClick={onPartnerClick}
             className="tap-target rounded-xl border border-white/40 text-white px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-semibold hover:bg-white/10 active:scale-[0.98] transition"

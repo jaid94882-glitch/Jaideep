@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { callRpc } from "@/lib/supabase";
 
 const STATUS_LABELS = {
@@ -36,7 +35,7 @@ const STAGE_RANK = {
 
 const inr = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
 
-export default function PartnerDashboard() {
+export default function PartnerDashboard({ onClose }) {
   const [code, setCode] = useState("");
   const [mobile, setMobile] = useState("");
   const [loading, setLoading] = useState(false);
@@ -104,37 +103,38 @@ export default function PartnerDashboard() {
   ];
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Top bar */}
       <header className="sticky top-0 z-40 bg-brand-dark/95 backdrop-blur border-b border-white/10">
         <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-success text-white font-bold text-lg">
               ₹
             </span>
             <span className="text-white font-bold text-base">
               Partner Dashboard
             </span>
-          </Link>
-          {data ? (
+          </div>
+          <div className="flex items-center gap-2">
+            {data && (
+              <button
+                onClick={() => {
+                  setData(null);
+                  setCode("");
+                  setMobile("");
+                }}
+                className="tap-target rounded-xl border border-white/40 text-white px-4 py-2 text-xs font-semibold hover:bg-white/10 transition"
+              >
+                Log out
+              </button>
+            )}
             <button
-              onClick={() => {
-                setData(null);
-                setCode("");
-                setMobile("");
-              }}
-              className="tap-target rounded-xl border border-white/40 text-white px-4 py-2 text-xs font-semibold hover:bg-white/10 transition"
-            >
-              Log out
-            </button>
-          ) : (
-            <Link
-              href="/"
-              className="text-blue-200 text-xs underline underline-offset-2"
+              onClick={onClose}
+              className="tap-target rounded-xl bg-white/10 border border-white/40 text-white px-4 py-2 text-xs font-semibold hover:bg-white/20 transition"
             >
               ← Back to site
-            </Link>
-          )}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -203,8 +203,11 @@ export default function PartnerDashboard() {
               )}
             </button>
             <p className="mt-4 text-center text-[11px] text-slate-400">
-              Not a partner yet? Register from the{" "}
-              <Link href="/" className="text-brand underline">home page</Link>.
+              Not a partner yet?{" "}
+              <button type="button" onClick={onClose} className="text-brand underline">
+                Register from the home page
+              </button>
+              .
             </p>
           </form>
         </div>
@@ -247,9 +250,9 @@ export default function PartnerDashboard() {
             </div>
             {leads.length === 0 ? (
               <p className="p-6 text-sm text-slate-500 text-center">
-                No leads yet. Submit your first doctor lead from the{" "}
-                <Link href="/" className="text-brand underline">home page</Link> —
-                enter your partner code on the form so it appears here.
+                No leads yet. Go back to the home page and submit your first
+                doctor lead — enter your partner code on the form so it appears
+                here.
               </p>
             ) : (
               <div className="overflow-x-auto">
@@ -311,6 +314,6 @@ export default function PartnerDashboard() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }
