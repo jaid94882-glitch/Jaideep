@@ -12,10 +12,16 @@ const STEPS = [
     desc: "Lead is qualified and matched with the right RBI-registered lending partner.",
   },
   {
+    icon: "🏦",
+    title: "Lender Assessment",
+    titleHi: "लेंडर मूल्यांकन",
+    desc: "Lending company runs credit analysis and approves the loan.",
+  },
+  {
     icon: "🏥",
     title: "Doctor Funded",
     titleHi: "डॉक्टर को फंड मिलता है",
-    desc: "Lender completes credit analysis and disburses directly to the doctor.",
+    desc: "Approved amount is disbursed directly to the doctor's account.",
   },
   {
     icon: "💰",
@@ -31,7 +37,7 @@ export default function JourneyMap() {
       <div className="mx-auto max-w-5xl">
         <div className="text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-brand">
-            From Lead to Payout in 4 Steps
+            From Lead to Payout in 5 Steps
           </h2>
           <p className="mt-2 text-sm text-slate-500">
             लीड से कमीशन तक — पूरी प्रक्रिया पारदर्शी
