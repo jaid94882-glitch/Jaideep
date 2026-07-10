@@ -32,19 +32,6 @@ export default function MicroDashboard() {
             </p>
           </div>
 
-          {/* Total doctors funded */}
-          <div className="rounded-2xl bg-white shadow-card p-4 md:p-6 border-t-4 border-success">
-            <p className="text-xs md:text-sm text-slate-500 font-medium">
-              Total Doctors Funded
-            </p>
-            <p className="mt-1 text-3xl md:text-4xl font-bold text-success">
-              {funded.toLocaleString("en-IN")}
-            </p>
-            <p className="text-[11px] text-slate-400 mt-1">
-              Loans disbursed to doctors
-            </p>
-          </div>
-
           {/* Total lending partners (fixed) */}
           <div className="rounded-2xl bg-white shadow-card p-4 md:p-6 border-t-4 border-amber-400">
             <p className="text-xs md:text-sm text-slate-500 font-medium">
@@ -55,6 +42,19 @@ export default function MicroDashboard() {
             </p>
             <p className="text-[11px] text-slate-400 mt-1">
               RBI-registered lenders
+            </p>
+          </div>
+
+          {/* Total doctors funded */}
+          <div className="rounded-2xl bg-white shadow-card p-4 md:p-6 border-t-4 border-success">
+            <p className="text-xs md:text-sm text-slate-500 font-medium">
+              Total Doctors Funded
+            </p>
+            <p className="mt-1 text-3xl md:text-4xl font-bold text-success">
+              {funded.toLocaleString("en-IN")}
+            </p>
+            <p className="text-[11px] text-slate-400 mt-1">
+              Loans disbursed to doctors
             </p>
           </div>
         </div>
