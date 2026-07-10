@@ -1,3 +1,5 @@
+import HeroScene from "./HeroScene";
+
 export default function Hero({ onQuickSubmit }) {
   return (
     <section className="bg-gradient-to-b from-brand to-brand-dark text-white px-5 pt-10 pb-14 md:pt-20 md:pb-24">
@@ -36,6 +38,9 @@ export default function Hero({ onQuickSubmit }) {
             <span>✔ RBI-registered lending partners</span>
             <span>💸 Instant payout</span>
           </div>
+        </div>
+        <div className="mt-10 md:mt-0 md:shrink-0 md:w-[420px]">
+          <HeroScene />
         </div>
       </div>
     </section>

@@ -20,3 +20,41 @@ body {
 .tap-target {
   min-height: 48px;
 }
+
+/* ===== Hero scene animations ===== */
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes nod {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(2.5deg); }
+}
+@keyframes lean {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-2deg); }
+}
+@keyframes gesture {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes bubblePop {
+  0%, 8% { opacity: 0; transform: scale(0.85); }
+  16%, 46% { opacity: 1; transform: scale(1); }
+  54%, 100% { opacity: 0; transform: scale(0.9); }
+}
+
+.anim-float { animation: floatY 4s ease-in-out infinite; }
+.anim-float-slow { animation: floatY 5.5s ease-in-out 0.8s infinite; }
+.anim-float-slower { animation: floatY 6.5s ease-in-out 1.6s infinite; }
+.anim-nod { animation: nod 5s ease-in-out infinite; transform-origin: 368px 200px; }
+.anim-lean { animation: lean 5s ease-in-out 0.5s infinite; transform-origin: 112px 200px; }
+.anim-gesture { animation: gesture 3s ease-in-out infinite; }
+.anim-bubble-1 { animation: bubblePop 8s ease-in-out infinite; transform-origin: 135px 140px; }
+.anim-bubble-2 { animation: bubblePop 8s ease-in-out 4s infinite; transform-origin: 349px 140px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-float, .anim-float-slow, .anim-float-slower, .anim-nod,
+  .anim-lean, .anim-gesture { animation: none; }
+  .anim-bubble-1, .anim-bubble-2 { animation: none; opacity: 1; }
+}
