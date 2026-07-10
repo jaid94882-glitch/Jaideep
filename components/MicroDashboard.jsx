@@ -18,7 +18,7 @@ export default function MicroDashboard() {
   return (
     <section className="px-5 -mt-8 relative z-10">
       <div className="mx-auto max-w-5xl">
-        <div className="grid grid-cols-2 gap-3 md:gap-5">
+        <div className="grid grid-cols-3 gap-3 md:gap-5">
           {/* Total business partners */}
           <div className="rounded-2xl bg-white shadow-card p-4 md:p-6 border-t-4 border-brand">
             <p className="text-xs md:text-sm text-slate-500 font-medium">
@@ -42,6 +42,19 @@ export default function MicroDashboard() {
             </p>
             <p className="text-[11px] text-slate-400 mt-1">
               Loans disbursed to doctors
+            </p>
+          </div>
+
+          {/* Total lending partners (fixed) */}
+          <div className="rounded-2xl bg-white shadow-card p-4 md:p-6 border-t-4 border-amber-400">
+            <p className="text-xs md:text-sm text-slate-500 font-medium">
+              Total Lending Partners
+            </p>
+            <p className="mt-1 text-3xl md:text-4xl font-bold text-amber-500">
+              10
+            </p>
+            <p className="text-[11px] text-slate-400 mt-1">
+              RBI-registered lenders
             </p>
           </div>
         </div>
