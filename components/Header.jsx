@@ -15,9 +15,9 @@ export default function Header({ onPartnerClick, onLeadClick, onLoginClick }) {
         <div className="flex items-center gap-2">
           <button
             onClick={onLoginClick}
-            className="tap-target flex items-center px-2 text-blue-200 text-xs font-semibold underline underline-offset-2 hover:text-white transition"
+            className="tap-target rounded-xl bg-white text-brand px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-bold hover:bg-blue-50 active:scale-[0.98] transition shadow-lg shadow-blue-950/30"
           >
-            Login
+            👤 Login
           </button>
           <button
             onClick={onPartnerClick}
