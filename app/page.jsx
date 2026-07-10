@@ -10,32 +10,33 @@ import Footer from "@/components/Footer";
 import StickyCTA from "@/components/StickyCTA";
 import PartnerModal from "@/components/PartnerModal";
 import PartnerDashboard from "@/components/PartnerDashboard";
+import LeadScreen from "@/components/LeadScreen";
 
 export default function Home() {
   const [partnerOpen, setPartnerOpen] = useState(false);
-  const [dashboardOpen, setDashboardOpen] = useState(false);
+  const [view, setView] = useState("home"); // "home" | "dashboard" | "lead"
 
-  const scrollToForm = () => {
-    document.getElementById("lead-form")?.scrollIntoView({ behavior: "smooth" });
-  };
+  if (view === "dashboard") {
+    return <PartnerDashboard onClose={() => setView("home")} />;
+  }
 
-  if (dashboardOpen) {
-    return <PartnerDashboard onClose={() => setDashboardOpen(false)} />;
+  if (view === "lead") {
+    return <LeadScreen onClose={() => setView("home")} />;
   }
 
   return (
     <main>
       <Header
         onPartnerClick={() => setPartnerOpen(true)}
-        onLeadClick={scrollToForm}
-        onLoginClick={() => setDashboardOpen(true)}
+        onLeadClick={() => setView("lead")}
+        onLoginClick={() => setView("dashboard")}
       />
-      <Hero onQuickSubmit={scrollToForm} />
+      <Hero onQuickSubmit={() => setView("lead")} />
       <MicroDashboard />
       <LeadForm />
       <JourneyMap />
       <Footer />
-      <StickyCTA onClick={scrollToForm} />
+      <StickyCTA onClick={() => setView("lead")} />
       <PartnerModal open={partnerOpen} onClose={() => setPartnerOpen(false)} />
     </main>
   );
