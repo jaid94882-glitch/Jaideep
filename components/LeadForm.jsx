@@ -36,6 +36,7 @@ const STEPS = [
 ];
 
 const initialForm = {
+  partnerCode: "",
   doctorName: "", phone: "", location: "", experience: "", email: "",
   regDate: "", hospital: "", degree: "", speciality: "",
   loanPurpose: "", amount: "", loanType: "",
@@ -64,6 +65,8 @@ export default function LeadForm() {
   const validateStep = (s) => {
     const err = {};
     if (s === 1) {
+      if (form.partnerCode.trim() && !/^MR\d{5}$/i.test(form.partnerCode.trim()))
+        err.partnerCode = "Partner code looks like MR00001. Leave blank if you don't have one.";
       if (form.doctorName.trim().length < 3) err.doctorName = "Enter the doctor's full name.";
       if (!/^[6-9]\d{9}$/.test(form.phone)) err.phone = "Valid 10-digit mobile required (starts 6–9).";
       if (!form.location.trim()) err.location = "Enter city / location.";
@@ -107,8 +110,13 @@ export default function LeadForm() {
     setSubmitError("");
     try {
       const leadId = newId();
+      const attachedDocs = Object.entries(docs).filter(([, f]) => f?.fileObj);
       await insertRow("leads", {
         id: leadId,
+        partner_code: form.partnerCode.trim()
+          ? form.partnerCode.trim().toUpperCase()
+          : null,
+        docs_collected: attachedDocs.length,
         doctor_name: form.doctorName.trim(),
         phone: `+91${form.phone}`,
         location: form.location.trim(),
@@ -122,8 +130,7 @@ export default function LeadForm() {
         loan_amount: Number(form.amount),
         loan_type: form.loanType,
       });
-      const attached = Object.entries(docs).filter(([, f]) => f?.fileObj);
-      for (const [key, f] of attached) {
+      for (const [key, f] of attachedDocs) {
         const safeName = f.name.replace(/[^\w.\-]+/g, "_");
         await uploadDocument(`${leadId}/${key}-${safeName}`, f.fileObj);
       }
@@ -208,6 +215,21 @@ export default function LeadForm() {
           {/* ===== STEP 1: Doctor Information ===== */}
           {step === 1 && (
             <div className="space-y-4">
+              <div>
+                <label htmlFor="partnerCode" className="block text-sm font-semibold text-slate-700">
+                  Your Partner Code{" "}
+                  <span className="font-normal text-slate-400">(optional — links this lead to your dashboard)</span>
+                </label>
+                <input id="partnerCode" type="text" placeholder="MR00001" value={form.partnerCode}
+                  onChange={(e) => {
+                    const v = e.target.value.toUpperCase();
+                    setForm((f) => ({ ...f, partnerCode: v }));
+                    setErrors((err) => ({ ...err, partnerCode: undefined }));
+                  }}
+                  className={`mt-1.5 ${inputCls(errors.partnerCode)} uppercase tracking-wider`} />
+                <Err k="partnerCode" />
+              </div>
+
               <div>
                 <label htmlFor="doctorName" className="block text-sm font-semibold text-slate-700">
                   Doctor&apos;s Name

@@ -87,7 +87,9 @@ export default function PartnerModal({ open, onClose }) {
             </h3>
             <p className="mt-2 text-sm text-slate-600">
               Thanks {form.name.split(" ")[0]}! Our team will call you on +91{" "}
-              {form.mobile} within 24 hours to activate your partner account.
+              {form.mobile} within 24 hours with your partner code (MR000…).
+              Use it with your mobile number to log in to your dashboard and
+              track leads, sanctions and commissions.
             </p>
             <button
               onClick={close}

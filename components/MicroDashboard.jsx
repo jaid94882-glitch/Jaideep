@@ -1,11 +1,28 @@
-const PIPELINE = [
-  { label: "Submitted", count: 8, color: "bg-blue-400" },
-  { label: "Validating", count: 5, color: "bg-amber-400" },
-  { label: "Funded", count: 3, color: "bg-success" },
-];
+"use client";
+
+import { useEffect, useState } from "react";
+import { callRpc } from "@/lib/supabase";
 
 export default function MicroDashboard() {
-  const total = PIPELINE.reduce((s, p) => s + p.count, 0);
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    callRpc("get_dashboard_stats")
+      .then(setStats)
+      .catch(() => {});
+  }, []);
+
+  const submitted = Number(stats?.submitted ?? 0);
+  const inProcess = Number(stats?.in_process ?? 0);
+  const funded = Number(stats?.funded ?? 0);
+  const commission = Number(stats?.total_commission ?? 0);
+  const total = submitted + inProcess + funded;
+
+  const pipeline = [
+    { label: "Submitted", count: submitted, color: "bg-blue-400" },
+    { label: "In Process", count: inProcess, color: "bg-amber-400" },
+    { label: "Funded", count: funded, color: "bg-success" },
+  ];
 
   return (
     <section className="px-5 -mt-8 relative z-10">
@@ -17,9 +34,11 @@ export default function MicroDashboard() {
               Total Earned Commission
             </p>
             <p className="mt-1 text-2xl md:text-3xl font-bold text-success">
-              ₹1,24,500
+              ₹{commission.toLocaleString("en-IN")}
             </p>
-            <p className="text-[11px] text-slate-400 mt-1">Lifetime payouts</p>
+            <p className="text-[11px] text-slate-400 mt-1">
+              Paid on funded loans
+            </p>
           </div>
 
           {/* Pending approvals */}
@@ -28,7 +47,7 @@ export default function MicroDashboard() {
               Pending Lead Approvals
             </p>
             <p className="mt-1 text-2xl md:text-3xl font-bold text-slate-800">
-              5
+              {submitted}
             </p>
             <p className="text-[11px] text-slate-400 mt-1">
               Awaiting aggregator review
@@ -38,20 +57,21 @@ export default function MicroDashboard() {
           {/* Pipeline */}
           <div className="rounded-2xl bg-white shadow-card p-4 md:p-6 border-t-4 border-brand col-span-2 md:col-span-1">
             <p className="text-xs text-slate-500 font-medium">
-              Active Pipeline ({total} leads)
+              Active Pipeline ({total} {total === 1 ? "lead" : "leads"})
             </p>
             <div className="mt-3 flex h-3 w-full overflow-hidden rounded-full bg-slate-100">
-              {PIPELINE.map((p) => (
-                <div
-                  key={p.label}
-                  className={`${p.color} h-full transition-all`}
-                  style={{ width: `${(p.count / total) * 100}%` }}
-                  title={`${p.label}: ${p.count}`}
-                />
-              ))}
+              {total > 0 &&
+                pipeline.map((p) => (
+                  <div
+                    key={p.label}
+                    className={`${p.color} h-full transition-all`}
+                    style={{ width: `${(p.count / total) * 100}%` }}
+                    title={`${p.label}: ${p.count}`}
+                  />
+                ))}
             </div>
             <div className="mt-2 flex justify-between text-[11px] text-slate-500">
-              {PIPELINE.map((p) => (
+              {pipeline.map((p) => (
                 <span key={p.label} className="flex items-center gap-1">
                   <span className={`inline-block h-2 w-2 rounded-full ${p.color}`} />
                   {p.label} {p.count}
