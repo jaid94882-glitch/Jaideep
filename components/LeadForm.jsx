@@ -97,6 +97,12 @@ export default function LeadForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Enter key on steps 1–2 advances to the next step; only the
+    // Documents step can actually submit the lead.
+    if (step < 3) {
+      next();
+      return;
+    }
     setSubmitting(true);
     setSubmitError("");
     try {
