@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { insertRow, newId } from "@/lib/supabase";
 
 const initial = { name: "", mobile: "", pharma: "", city: "", email: "" };
 
@@ -9,6 +10,7 @@ export default function PartnerModal({ open, onClose }) {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   if (!open) return null;
 
@@ -27,16 +29,30 @@ export default function PartnerModal({ open, onClose }) {
     return err;
   };
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     const err = validate();
     setErrors(err);
     if (Object.keys(err).length) return;
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    setSubmitError("");
+    try {
+      await insertRow("partners", {
+        id: newId(),
+        name: form.name.trim(),
+        mobile: `+91${form.mobile}`,
+        pharma_company: form.pharma.trim(),
+        city: form.city.trim(),
+        email: form.email.trim(),
+      });
       setDone(true);
-    }, 1200);
+    } catch {
+      setSubmitError(
+        "Submission failed — please check your internet connection and try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const close = () => {
@@ -171,6 +187,9 @@ export default function PartnerModal({ open, onClose }) {
                 "Join as Partner →"
               )}
             </button>
+            {submitError && (
+              <p className="mt-3 text-center text-sm text-red-500">{submitError}</p>
+            )}
           </form>
         )}
       </div>

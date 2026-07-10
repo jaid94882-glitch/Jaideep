@@ -3,27 +3,22 @@
 import { useRef } from "react";
 
 /**
- * One labeled document slot with browse + camera capture and
- * simulated upload progress. `file` is null or
- * { name, size, progress, status: "uploading" | "done" }.
+ * One labeled document slot with browse + camera capture.
+ * The file is held locally and uploaded to Supabase Storage on final submit.
+ * `file` is null or { name, size, fileObj, status: "ready" }.
  */
 export default function UploadSlot({ label, labelHi, file, onChange }) {
   const browseRef = useRef(null);
   const cameraRef = useRef(null);
 
-  const start = (f) => {
-    const entry = { name: f.name, size: f.size, progress: 0, status: "uploading" };
-    onChange(entry);
-    let progress = 0;
-    const timer = setInterval(() => {
-      progress = Math.min(progress + 14 + Math.random() * 16, 100);
-      onChange({
-        ...entry,
-        progress: Math.round(progress),
-        status: progress >= 100 ? "done" : "uploading",
-      });
-      if (progress >= 100) clearInterval(timer);
-    }, 220);
+  const MAX_BYTES = 10 * 1024 * 1024;
+
+  const pick = (f) => {
+    if (f.size > MAX_BYTES) {
+      alert("File is larger than 10 MB. Please choose a smaller file.");
+      return;
+    }
+    onChange({ name: f.name, size: f.size, fileObj: f, status: "ready" });
   };
 
   const formatSize = (bytes) =>
@@ -61,19 +56,12 @@ export default function UploadSlot({ label, labelHi, file, onChange }) {
 
       {file && (
         <div className="mt-2 flex items-center gap-2">
-          <span className="text-lg shrink-0">{file.status === "done" ? "✅" : "⏳"}</span>
+          <span className="text-lg shrink-0">✅</span>
           <div className="min-w-0 flex-1">
             <p className="text-xs font-medium text-slate-600 truncate">{file.name}</p>
-            {file.status === "uploading" ? (
-              <div className="mt-1 h-1.5 w-full rounded-full bg-slate-200 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-success transition-all duration-200"
-                  style={{ width: `${file.progress}%` }}
-                />
-              </div>
-            ) : (
-              <p className="text-[10px] text-slate-400">{formatSize(file.size)} · Uploaded</p>
-            )}
+            <p className="text-[10px] text-slate-400">
+              {formatSize(file.size)} · Attached — sent securely on submit
+            </p>
           </div>
           <button
             type="button"
@@ -92,7 +80,7 @@ export default function UploadSlot({ label, labelHi, file, onChange }) {
         accept=".pdf,.jpg,.jpeg,.png"
         className="hidden"
         onChange={(e) => {
-          if (e.target.files?.[0]) start(e.target.files[0]);
+          if (e.target.files?.[0]) pick(e.target.files[0]);
           e.target.value = "";
         }}
       />
@@ -103,7 +91,7 @@ export default function UploadSlot({ label, labelHi, file, onChange }) {
         capture="environment"
         className="hidden"
         onChange={(e) => {
-          if (e.target.files?.[0]) start(e.target.files[0]);
+          if (e.target.files?.[0]) pick(e.target.files[0]);
           e.target.value = "";
         }}
       />

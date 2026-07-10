@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import UploadSlot from "./UploadSlot";
+import { insertRow, uploadDocument, newId } from "@/lib/supabase";
 
 const LOAN_TYPES = [
   { value: "", label: "Select loan type" },
@@ -51,6 +52,7 @@ export default function LeadForm() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const set = (field) => (e) => {
     setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -81,10 +83,6 @@ export default function LeadForm() {
       if (!form.amount || isNaN(amt) || amt < 50000) err.amount = "Minimum amount is ₹50,000.";
       if (!form.loanType) err.loanType = "Select a loan type.";
     }
-    if (s === 3) {
-      if (Object.values(docs).some((f) => f && f.status === "uploading"))
-        err.docs = "Please wait for uploads to finish.";
-    }
     return err;
   };
 
@@ -97,17 +95,40 @@ export default function LeadForm() {
 
   const back = () => setStep((s) => Math.max(s - 1, 1));
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const err = validateStep(3);
-    setErrors(err);
-    if (Object.keys(err).length) return;
     setSubmitting(true);
-    // Simulate API submission — replace with your aggregator API
-    setTimeout(() => {
-      setSubmitting(false);
+    setSubmitError("");
+    try {
+      const leadId = newId();
+      await insertRow("leads", {
+        id: leadId,
+        doctor_name: form.doctorName.trim(),
+        phone: `+91${form.phone}`,
+        location: form.location.trim(),
+        experience_years: Number(form.experience),
+        email: form.email.trim(),
+        registration_date: form.regDate,
+        hospital: form.hospital.trim(),
+        degree: form.degree,
+        speciality: form.speciality,
+        loan_purpose: form.loanPurpose,
+        loan_amount: Number(form.amount),
+        loan_type: form.loanType,
+      });
+      const attached = Object.entries(docs).filter(([, f]) => f?.fileObj);
+      for (const [key, f] of attached) {
+        const safeName = f.name.replace(/[^\w.\-]+/g, "_");
+        await uploadDocument(`${leadId}/${key}-${safeName}`, f.fileObj);
+      }
       setSubmitted(true);
-    }, 1500);
+    } catch (err) {
+      setSubmitError(
+        "Submission failed — please check your internet connection and try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const inputCls = (bad) =>
@@ -359,7 +380,6 @@ export default function LeadForm() {
                 file={docs.degreeCert} onChange={setDoc("degreeCert")} />
               <UploadSlot label="Clinic / Hospital Proof"
                 file={docs.clinicProof} onChange={setDoc("clinicProof")} />
-              {errors.docs && <p className="text-xs text-red-500">{errors.docs}</p>}
             </div>
           )}
 
@@ -390,6 +410,9 @@ export default function LeadForm() {
               </button>
             )}
           </div>
+          {submitError && (
+            <p className="mt-3 text-center text-sm text-red-500">{submitError}</p>
+          )}
           <p className="mt-3 text-center text-[11px] text-slate-400">
             By submitting, you confirm the doctor has consented to share these details for loan processing.
           </p>
