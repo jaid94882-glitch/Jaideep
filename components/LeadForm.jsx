@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import UploadSlot from "./UploadSlot";
-import { insertRow, uploadDocument, newId } from "@/lib/supabase";
+import { insertRow, uploadDocument, callRpc, newId } from "@/lib/supabase";
 
 const LOAN_TYPES = [
   { value: "", label: "Select loan type" },
@@ -53,6 +53,7 @@ export default function LeadForm() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [leadCode, setLeadCode] = useState("");
   const [submitError, setSubmitError] = useState("");
 
   const set = (field) => (e) => {
@@ -111,7 +112,7 @@ export default function LeadForm() {
     try {
       const leadId = newId();
       const attachedDocs = Object.entries(docs).filter(([, f]) => f?.fileObj);
-      await insertRow("leads", {
+      const row = {
         id: leadId,
         partner_code: form.partnerCode.trim()
           ? form.partnerCode.trim().toUpperCase()
@@ -129,7 +130,15 @@ export default function LeadForm() {
         loan_purpose: form.loanPurpose,
         loan_amount: Number(form.amount),
         loan_type: form.loanType,
-      });
+      };
+      try {
+        // Preferred: RPC returns the generated lead code.
+        const res = await callRpc("submit_lead", { p: row });
+        setLeadCode(res?.lead_code || "");
+      } catch {
+        // Fallback: plain insert (code visible only in Supabase).
+        await insertRow("leads", row);
+      }
       for (const [key, f] of attachedDocs) {
         const safeName = f.name.replace(/[^\w.\-]+/g, "_");
         await uploadDocument(`${leadId}/${key}-${safeName}`, f.fileObj);
@@ -158,17 +167,29 @@ export default function LeadForm() {
         <div className="mx-auto max-w-xl rounded-2xl bg-success-light border border-success/30 p-8 text-center shadow-card">
           <div className="text-5xl">🎉</div>
           <h3 className="mt-4 text-2xl font-bold text-success-dark">
-            Lead Submitted!
+            Congratulations! Lead Submitted
           </h3>
-          <p className="mt-2 text-slate-600 text-sm">
+          {leadCode && (
+            <div className="mt-4 rounded-xl bg-white border-2 border-dashed border-success/50 py-4">
+              <p className="text-[11px] uppercase tracking-wide text-slate-500">
+                Your Lead ID
+              </p>
+              <p className="mt-1 text-3xl font-mono font-bold text-success-dark tracking-widest">
+                {leadCode}
+              </p>
+            </div>
+          )}
+          <p className="mt-3 text-slate-600 text-sm">
             Dr. {form.doctorName}&apos;s lead is with the aggregator for validation.
-            Commission is credited the moment the loan is disbursed.
+            {leadCode && " Note this Lead ID to track it in your dashboard."}
+            {" "}Commission is credited the moment the loan is disbursed.
           </p>
           <button
             onClick={() => {
               setForm(initialForm);
               setDocs(initialDocs);
               setStep(1);
+              setLeadCode("");
               setSubmitted(false);
             }}
             className="tap-target mt-6 rounded-xl bg-success text-white px-8 py-3.5 font-semibold hover:bg-success-dark transition"
