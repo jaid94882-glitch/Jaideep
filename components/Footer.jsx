@@ -1,4 +1,6 @@
-export default function Footer() {
+"use client";
+
+export default function Footer({ onAdminClick }) {
   return (
     <footer className="bg-brand-dark text-blue-200 px-5 py-10 pb-28 md:pb-10">
       <div className="mx-auto max-w-5xl text-center md:flex md:items-center md:justify-between md:text-left">
@@ -11,7 +13,16 @@ export default function Footer() {
         <div className="mt-4 md:mt-0 text-[11px] space-y-1">
           <p>🔒 All documents are encrypted and shared only with verified lending partners.</p>
           <p>Loans are subject to credit approval by RBI-registered lenders.</p>
-          <p>© {new Date().getFullYear()} MR Network Lending. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} MR Network Lending. All rights reserved.
+            {" · "}
+            <button
+              onClick={onAdminClick}
+              className="underline underline-offset-2 hover:text-white transition"
+            >
+              Admin
+            </button>
+          </p>
         </div>
       </div>
     </footer>

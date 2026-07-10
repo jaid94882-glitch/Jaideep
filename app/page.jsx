@@ -11,10 +11,11 @@ import StickyCTA from "@/components/StickyCTA";
 import PartnerModal from "@/components/PartnerModal";
 import PartnerDashboard from "@/components/PartnerDashboard";
 import LeadScreen from "@/components/LeadScreen";
+import AdminDashboard from "@/components/AdminDashboard";
 
 export default function Home() {
   const [partnerOpen, setPartnerOpen] = useState(false);
-  const [view, setView] = useState("home"); // "home" | "dashboard" | "lead"
+  const [view, setView] = useState("home"); // "home" | "dashboard" | "lead" | "admin"
 
   if (view === "dashboard") {
     return <PartnerDashboard onClose={() => setView("home")} />;
@@ -22,6 +23,10 @@ export default function Home() {
 
   if (view === "lead") {
     return <LeadScreen onClose={() => setView("home")} />;
+  }
+
+  if (view === "admin") {
+    return <AdminDashboard onClose={() => setView("home")} />;
   }
 
   return (
@@ -35,7 +40,7 @@ export default function Home() {
       <MicroDashboard />
       <LeadForm />
       <JourneyMap />
-      <Footer />
+      <Footer onAdminClick={() => setView("admin")} />
       <StickyCTA onClick={() => setView("lead")} />
       <PartnerModal open={partnerOpen} onClose={() => setPartnerOpen(false)} />
     </main>
