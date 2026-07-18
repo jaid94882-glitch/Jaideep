@@ -56,6 +56,7 @@ export default function LeadForm() {
   const [submitted, setSubmitted] = useState(false);
   const [leadCode, setLeadCode] = useState("");
   const [submitError, setSubmitError] = useState("");
+  const [nmc, setNmc] = useState({ loading: false, rows: null, error: "" });
 
   const set = (field) => (e) => {
     setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -164,6 +165,42 @@ export default function LeadForm() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const titleCase = (s) =>
+    (s || "")
+      .toLowerCase()
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+
+  // NMC row: [slNo, yearOfInfo, regNo, council, name, fatherName, actionHtml]
+  const verifyNmc = async () => {
+    const regNo = form.regNumber.trim();
+    if (regNo.length < 3) {
+      setNmc({ loading: false, rows: null, error: "Enter the registration number first." });
+      return;
+    }
+    setNmc({ loading: true, rows: null, error: "" });
+    try {
+      const res = await callRpc("nmc_lookup", { p_reg_no: regNo });
+      if (res?.error) throw new Error(res.error);
+      const rows = Array.isArray(res?.data) ? res.data : [];
+      setNmc({ loading: false, rows, error: "" });
+    } catch {
+      setNmc({
+        loading: false,
+        rows: null,
+        error: "Could not reach the NMC register right now.",
+      });
+    }
+  };
+
+  const useNmcRow = (r) => {
+    setForm((f) => ({
+      ...f,
+      doctorName: `Dr. ${titleCase(r[4])}`,
+      medicalCouncil: r[3] || f.medicalCouncil,
+    }));
+    setNmc({ loading: false, rows: null, error: "" });
   };
 
   const inputCls = (bad) =>
@@ -326,8 +363,14 @@ export default function LeadForm() {
                   <label htmlFor="regNumber" className="block text-sm font-semibold text-slate-700">
                     Medical Registration Number
                   </label>
-                  <input id="regNumber" type="text" placeholder="10087" value={form.regNumber}
-                    onChange={set("regNumber")} className={`mt-1.5 ${inputCls(errors.regNumber)}`} />
+                  <div className="mt-1.5 flex gap-2">
+                    <input id="regNumber" type="text" placeholder="10087" value={form.regNumber}
+                      onChange={set("regNumber")} className={`${inputCls(errors.regNumber)}`} />
+                    <button type="button" onClick={verifyNmc} disabled={nmc.loading}
+                      className="tap-target shrink-0 rounded-xl border-2 border-brand text-brand px-3 text-xs font-bold hover:bg-brand-light transition disabled:opacity-60">
+                      {nmc.loading ? "…" : "🔍 Verify"}
+                    </button>
+                  </div>
                   <Err k="regNumber" />
                 </div>
                 <div>
@@ -339,6 +382,53 @@ export default function LeadForm() {
                   <Err k="regDate" />
                 </div>
               </div>
+
+              {/* NMC verification results */}
+              {(nmc.rows || nmc.error) && (
+                <div className="rounded-xl border border-brand/20 bg-brand-light/60 p-3">
+                  {nmc.error ? (
+                    <p className="text-xs text-slate-600">
+                      ⚠️ {nmc.error}{" "}
+                      <a href="https://www.nmc.org.in/information-desk/indian-medical-register/"
+                        target="_blank" rel="noopener noreferrer"
+                        className="text-brand underline">
+                        Search manually on NMC
+                      </a>
+                    </p>
+                  ) : nmc.rows.length === 0 ? (
+                    <p className="text-xs text-slate-600">
+                      ❌ No doctor found with this registration number.{" "}
+                      <a href="https://www.nmc.org.in/information-desk/indian-medical-register/"
+                        target="_blank" rel="noopener noreferrer"
+                        className="text-brand underline">
+                        Check on NMC
+                      </a>
+                    </p>
+                  ) : (
+                    <>
+                      <p className="text-xs font-bold text-brand">
+                        ✅ Found {nmc.rows.length} record{nmc.rows.length > 1 ? "s" : ""} in the Indian Medical Register — tap one to autofill:
+                      </p>
+                      <ul className="mt-2 space-y-2">
+                        {nmc.rows.slice(0, 5).map((r, i) => (
+                          <li key={i}>
+                            <button type="button" onClick={() => useNmcRow(r)}
+                              className="w-full text-left rounded-lg bg-white border border-slate-200 p-2.5 hover:border-brand transition">
+                              <p className="text-sm font-semibold text-slate-800">
+                                {titleCase(r[4])}
+                              </p>
+                              <p className="text-[11px] text-slate-500">
+                                Reg. {r[2]} · {r[3]} · Year {r[1]}
+                                {r[5] ? ` · Father: ${titleCase(r[5])}` : ""}
+                              </p>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </div>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
