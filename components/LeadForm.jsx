@@ -38,7 +38,8 @@ const STEPS = [
 const initialForm = {
   partnerCode: "",
   doctorName: "", phone: "", location: "", experience: "", email: "",
-  regDate: "", hospital: "", degree: "", speciality: "",
+  regDate: "", regNumber: "", medicalCouncil: "", qualYear: "",
+  hospital: "", degree: "", speciality: "",
   loanPurpose: "", amount: "", loanType: "",
 };
 
@@ -77,6 +78,15 @@ export default function LeadForm() {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) err.email = "Valid email required.";
       if (!form.regDate) err.regDate = "Select the registration date.";
       else if (new Date(form.regDate) > new Date()) err.regDate = "Date cannot be in the future.";
+      if (!form.regNumber.trim() || form.regNumber.trim().length < 3)
+        err.regNumber = "Enter the medical registration number.";
+      if (!form.medicalCouncil.trim())
+        err.medicalCouncil = "Enter the State Medical Council.";
+      if (form.qualYear !== "") {
+        const y = Number(form.qualYear);
+        if (isNaN(y) || y < 1950 || y > new Date().getFullYear())
+          err.qualYear = "Enter a valid year (e.g. 2015).";
+      }
       if (!form.hospital.trim()) err.hospital = "Enter hospital / clinic name.";
       if (!form.degree) err.degree = "Select a degree.";
       if (!form.speciality) err.speciality = "Select a speciality.";
@@ -124,6 +134,9 @@ export default function LeadForm() {
         experience_years: Number(form.experience),
         email: form.email.trim(),
         registration_date: form.regDate,
+        registration_number: form.regNumber.trim(),
+        medical_council: form.medicalCouncil.trim(),
+        qualification_year: form.qualYear === "" ? null : Number(form.qualYear),
         hospital: form.hospital.trim(),
         degree: form.degree,
         speciality: form.speciality,
@@ -308,13 +321,45 @@ export default function LeadForm() {
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="regDate" className="block text-sm font-semibold text-slate-700">
-                  Medical Registration Date
-                </label>
-                <input id="regDate" type="date" value={form.regDate} onChange={set("regDate")}
-                  className={`mt-1.5 ${inputCls(errors.regDate)}`} />
-                <Err k="regDate" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="regNumber" className="block text-sm font-semibold text-slate-700">
+                    Medical Registration Number
+                  </label>
+                  <input id="regNumber" type="text" placeholder="10087" value={form.regNumber}
+                    onChange={set("regNumber")} className={`mt-1.5 ${inputCls(errors.regNumber)}`} />
+                  <Err k="regNumber" />
+                </div>
+                <div>
+                  <label htmlFor="regDate" className="block text-sm font-semibold text-slate-700">
+                    Medical Registration Date
+                  </label>
+                  <input id="regDate" type="date" value={form.regDate} onChange={set("regDate")}
+                    className={`mt-1.5 ${inputCls(errors.regDate)}`} />
+                  <Err k="regDate" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="medicalCouncil" className="block text-sm font-semibold text-slate-700">
+                    State Medical Council
+                  </label>
+                  <input id="medicalCouncil" type="text" placeholder="Uttarakhand Medical Council"
+                    value={form.medicalCouncil} onChange={set("medicalCouncil")}
+                    className={`mt-1.5 ${inputCls(errors.medicalCouncil)}`} />
+                  <Err k="medicalCouncil" />
+                </div>
+                <div>
+                  <label htmlFor="qualYear" className="block text-sm font-semibold text-slate-700">
+                    Qualification Year{" "}
+                    <span className="font-normal text-slate-400">(optional)</span>
+                  </label>
+                  <input id="qualYear" type="number" inputMode="numeric" placeholder="2015"
+                    value={form.qualYear} onChange={set("qualYear")}
+                    className={`mt-1.5 ${inputCls(errors.qualYear)}`} />
+                  <Err k="qualYear" />
+                </div>
               </div>
 
               <UploadSlot
