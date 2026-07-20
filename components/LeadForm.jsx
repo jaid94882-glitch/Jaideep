@@ -181,7 +181,7 @@ export default function LeadForm() {
     }
     setNmc({ loading: true, rows: null, error: "" });
     try {
-      const res = await callEdge("nmc-lookup", { reg_no: regNo });
+      const res = await callEdge("rapid-function", { reg_no: regNo });
       if (res?.error) throw new Error(res.error);
       const rows = Array.isArray(res?.data) ? res.data : [];
       setNmc({ loading: false, rows, error: "" });
