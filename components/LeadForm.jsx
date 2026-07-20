@@ -58,6 +58,13 @@ export default function LeadForm() {
   const [submitError, setSubmitError] = useState("");
   const [nmc, setNmc] = useState({ loading: false, rows: null, error: "" });
 
+  // Pre-verification flow: mobile OTP -> registration check -> form
+  const [stage, setStage] = useState("mobile"); // "mobile" | "otp" | "reg" | "form"
+  const [preMobile, setPreMobile] = useState("");
+  const [demoOtp, setDemoOtp] = useState("");
+  const [otpInput, setOtpInput] = useState("");
+  const [preErr, setPreErr] = useState("");
+
   const set = (field) => (e) => {
     setForm((f) => ({ ...f, [field]: e.target.value }));
     setErrors((err) => ({ ...err, [field]: undefined }));
@@ -167,6 +174,28 @@ export default function LeadForm() {
     }
   };
 
+  const sendOtp = () => {
+    setPreErr("");
+    if (!/^[6-9]\d{9}$/.test(preMobile)) {
+      setPreErr("Enter the doctor's valid 10-digit mobile number.");
+      return;
+    }
+    const code = String(Math.floor(100000 + Math.random() * 900000));
+    setDemoOtp(code);
+    setOtpInput("");
+    setStage("otp");
+  };
+
+  const verifyOtpCode = () => {
+    setPreErr("");
+    if (otpInput !== demoOtp) {
+      setPreErr("Incorrect OTP — please check and try again.");
+      return;
+    }
+    setForm((f) => ({ ...f, phone: preMobile }));
+    setStage("reg");
+  };
+
   const titleCase = (s) =>
     (s || "")
       .toLowerCase()
@@ -241,11 +270,178 @@ export default function LeadForm() {
               setStep(1);
               setLeadCode("");
               setSubmitted(false);
+              setStage("mobile");
+              setPreMobile("");
+              setDemoOtp("");
+              setOtpInput("");
+              setPreErr("");
+              setNmc({ loading: false, rows: null, error: "" });
             }}
             className="tap-target mt-6 rounded-xl bg-success text-white px-8 py-3.5 font-semibold hover:bg-success-dark transition"
           >
             + Submit Another Lead
           </button>
+        </div>
+      </section>
+    );
+  }
+
+  /* ===== Pre-verification: mobile OTP + registration check ===== */
+  if (stage !== "form") {
+    return (
+      <section id="lead-form" className="px-5 py-12 md:py-16">
+        <div className="mx-auto max-w-xl">
+          <div className="text-center md:text-left">
+            <h2 className="text-2xl md:text-3xl font-bold text-brand">
+              Verify the Doctor First
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Mobile OTP → Registration check → Lead form
+            </p>
+          </div>
+
+          {/* Progress dots */}
+          <div className="mt-5 flex gap-1.5">
+            {["Mobile OTP", "Doctor Verify", "Lead Details"].map((label, i) => {
+              const active =
+                (i === 0 && (stage === "mobile" || stage === "otp")) ||
+                (i === 1 && stage === "reg");
+              const done = i === 0 && stage === "reg";
+              return (
+                <div key={label}
+                  className={`flex-1 rounded-xl px-2 py-2 text-center text-[11px] font-bold border-2 ${
+                    active ? "bg-brand text-white border-brand"
+                    : done ? "bg-success-light text-success-dark border-success/40"
+                    : "bg-white text-slate-400 border-slate-200"
+                  }`}>
+                  {done ? "✓ " : ""}{label}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-4 rounded-2xl bg-white shadow-card p-5 md:p-8">
+            {/* Stage 1: mobile */}
+            {stage === "mobile" && (
+              <div>
+                <label htmlFor="preMobile" className="block text-sm font-semibold text-slate-700">
+                  Doctor&apos;s Mobile Number
+                </label>
+                <p className="mt-1 text-xs text-slate-500">
+                  An OTP will be sent to verify this number belongs to the doctor.
+                </p>
+                <div className="mt-3 flex">
+                  <span className="inline-flex items-center rounded-l-xl border border-r-0 border-slate-300 bg-slate-50 px-3 text-sm text-slate-500">+91</span>
+                  <input id="preMobile" type="tel" inputMode="numeric" maxLength={10}
+                    placeholder="98765 43210" value={preMobile}
+                    onChange={(e) => { setPreMobile(e.target.value.replace(/\D/g, "").slice(0, 10)); setPreErr(""); }}
+                    className="tap-target w-full rounded-r-xl border border-slate-300 bg-white px-4 py-3 text-base outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand" />
+                </div>
+                {preErr && <p className="mt-2 text-xs text-red-500">{preErr}</p>}
+                <button type="button" onClick={sendOtp}
+                  className="tap-target mt-5 w-full rounded-xl bg-brand text-white py-3.5 font-bold hover:bg-brand-dark active:scale-[0.99] transition">
+                  Send OTP →
+                </button>
+              </div>
+            )}
+
+            {/* Stage 2: OTP */}
+            {stage === "otp" && (
+              <div>
+                <p className="text-sm font-semibold text-slate-700">
+                  Enter the OTP sent to +91 {preMobile}
+                </p>
+                <div className="mt-3 rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800">
+                  🧪 <b>Demo mode</b> — SMS gateway not connected yet. Your OTP is:{" "}
+                  <span className="font-mono font-bold text-base">{demoOtp}</span>
+                </div>
+                <input type="text" inputMode="numeric" maxLength={6} placeholder="6-digit OTP"
+                  value={otpInput}
+                  onChange={(e) => { setOtpInput(e.target.value.replace(/\D/g, "").slice(0, 6)); setPreErr(""); }}
+                  className="tap-target mt-4 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-center text-2xl tracking-[0.5em] font-mono outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand" />
+                {preErr && <p className="mt-2 text-xs text-red-500">{preErr}</p>}
+                <button type="button" onClick={verifyOtpCode}
+                  className="tap-target mt-4 w-full rounded-xl bg-success text-white py-3.5 font-bold hover:bg-success-dark active:scale-[0.99] transition">
+                  Verify OTP ✓
+                </button>
+                <div className="mt-3 flex justify-between text-xs">
+                  <button type="button" onClick={sendOtp} className="text-brand underline">Resend OTP</button>
+                  <button type="button" onClick={() => { setStage("mobile"); setPreErr(""); }} className="text-slate-500 underline">Change number</button>
+                </div>
+              </div>
+            )}
+
+            {/* Stage 3: registration check */}
+            {stage === "reg" && (
+              <div>
+                <div className="rounded-xl bg-success-light border border-success/30 px-3 py-2 text-xs text-success-dark font-semibold">
+                  ✅ Mobile verified: +91 {preMobile}
+                </div>
+                <label htmlFor="preReg" className="mt-4 block text-sm font-semibold text-slate-700">
+                  Doctor&apos;s Medical Registration Number
+                </label>
+                <p className="mt-1 text-xs text-slate-500">
+                  We check this against the Indian Medical Register (NMC).
+                </p>
+                <div className="mt-3 flex gap-2">
+                  <input id="preReg" type="text" placeholder="10087" value={form.regNumber}
+                    onChange={set("regNumber")}
+                    className="tap-target w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand" />
+                  <button type="button" onClick={verifyNmc} disabled={nmc.loading}
+                    className="tap-target shrink-0 rounded-xl bg-brand text-white px-4 text-sm font-bold hover:bg-brand-dark transition disabled:opacity-60">
+                    {nmc.loading ? "Checking…" : "🔍 Verify"}
+                  </button>
+                </div>
+                {nmc.loading && (
+                  <p className="mt-2 text-xs text-slate-500">
+                    Searching the Indian Medical Register — takes about 15 seconds…
+                  </p>
+                )}
+                {(nmc.rows || nmc.error) && (
+                  <div className="mt-3 rounded-xl border border-brand/20 bg-brand-light/60 p-3">
+                    {nmc.error ? (
+                      <p className="text-xs text-slate-600">
+                        ⚠️ {nmc.error}{" "}
+                        <a href="https://www.nmc.org.in/information-desk/indian-medical-register/"
+                          target="_blank" rel="noopener noreferrer" className="text-brand underline">
+                          Search manually on NMC
+                        </a>
+                      </p>
+                    ) : nmc.rows.length === 0 ? (
+                      <p className="text-xs text-slate-600">
+                        ❌ No doctor found with this registration number.
+                      </p>
+                    ) : (
+                      <>
+                        <p className="text-xs font-bold text-brand">
+                          ✅ Found in the Indian Medical Register — tap the correct doctor:
+                        </p>
+                        <ul className="mt-2 space-y-2">
+                          {nmc.rows.slice(0, 5).map((r, i) => (
+                            <li key={i}>
+                              <button type="button"
+                                onClick={() => { useNmcRow(r); setStage("form"); }}
+                                className="w-full text-left rounded-lg bg-white border border-slate-200 p-2.5 hover:border-brand transition">
+                                <p className="text-sm font-semibold text-slate-800">{titleCase(r[4])}</p>
+                                <p className="text-[11px] text-slate-500">
+                                  Reg. {r[2]} · {r[3]} · Year {r[1]}
+                                  {r[5] ? ` · Father: ${titleCase(r[5])}` : ""}
+                                </p>
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
+                  </div>
+                )}
+                <button type="button" onClick={() => setStage("form")}
+                  className="tap-target mt-4 w-full rounded-xl border-2 border-slate-300 text-slate-600 py-3 text-sm font-semibold hover:bg-slate-50 transition">
+                  Skip verification — fill details manually →
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </section>
     );
