@@ -181,8 +181,18 @@ export default function LeadForm() {
     }
     setNmc({ loading: true, rows: null, error: "" });
     try {
-      const res = await callRpc("nmc_lookup", { p_reg_no: regNo });
-      if (res?.error) throw new Error(res.error);
+      // Start the lookup on Apify, then poll for the result
+      // (each call is quick, so none hits the server time limit).
+      const start = await callRpc("nmc_start", { p_reg_no: regNo });
+      if (!start?.run_id) throw new Error(start?.error || "start-failed");
+      let res = null;
+      for (let i = 0; i < 20; i++) {
+        await new Promise((r) => setTimeout(r, 3000));
+        res = await callRpc("nmc_result", { p_run_id: start.run_id });
+        if (res?.status !== "RUNNING") break;
+      }
+      if (!res || res.error || res.status === "RUNNING")
+        throw new Error(res?.error || "timeout");
       const rows = Array.isArray(res?.data) ? res.data : [];
       setNmc({ loading: false, rows, error: "" });
     } catch {
